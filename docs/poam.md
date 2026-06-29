@@ -1,0 +1,27 @@
+# Plan of Action and Milestones (POA&M)
+
+Tracks open findings, planned labs, and remediation timelines across the home lab.
+Updated as each lab completes or uncovers a gap.
+
+---
+
+## Open items
+
+| ID | Finding / Task | Lab | Priority | Target date | Status |
+|----|---------------|-----|----------|-------------|--------|
+| 001 | Complete Entra ID user/group/RBAC configuration | 02 | High | — | In progress |
+| 002 | Wireshark TCP handshake + DNS + HTTP capture | 03 | Medium | — | Planned |
+| 003 | Windows Server DC promotion + client join | 04 | Medium | — | Planned |
+| 004 | Apply Windows 10 STIG, collect evidence | 05 | High | — | Planned |
+| 005 | Hybrid identity capstone (Entra Connect) | 06 | Low | — | Planned |
+
+---
+
+## Closed items
+
+_None yet._
+
+---
+
+> A POA&M is a living document in real GRC programs — it is never "done,"
+> only continuously updated. The habit of maintaining one here mirrors that practice.

@@ -1,0 +1,51 @@
+# ── OS Artifacts ──────────────────────────────────────────────────────────────
+Thumbs.db
+[Dd]esktop.ini
+*.lnk
+$RECYCLE.BIN/
+
+# ── Editor ────────────────────────────────────────────────────────────────────
+.vscode/
+*.suo
+*.user
+
+# ── Wireshark / Network Captures ──────────────────────────────────────────────
+# Raw captures stay out of git — commit sanitized screenshots for evidence instead
+*.pcap
+*.pcapng
+
+# ── STIG Viewer ───────────────────────────────────────────────────────────────
+# .ckl checklists are tracked; only block auto-generated backups
+*.ckl.bak
+
+# ── PowerShell ────────────────────────────────────────────────────────────────
+# Transcripts can contain sensitive session data
+*_transcript.txt
+PSSession*.xml
+
+# ── Secrets — NEVER commit these ──────────────────────────────────────────────
+*.key
+*.pem
+*.pfx
+*.p12
+*.crt
+.env
+.env.*
+secrets.*
+*_credentials.*
+*password*
+*secret*
+
+# ── Hyper-V / VM Export Artifacts ─────────────────────────────────────────────
+*.vhd
+*.vhdx
+*.vmcx
+*.vmrs
+
+# ── Claude Code (local tooling config) ───────────────────────────────────────
+.claude/
+
+# ── Temporary / Scratch ───────────────────────────────────────────────────────
+*.tmp
+*.log
+~$*
