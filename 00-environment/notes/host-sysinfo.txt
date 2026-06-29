@@ -1,0 +1,35 @@
+Host System Information
+=======================
+Captured: 2026-06-29
+Hostname: [redacted]
+Purpose: Lab host — read/analyze/document only; no system modifications
+
+OS Name:                   Microsoft Windows 10 Pro
+OS Version:                10.0.19045 N/A Build 19045 (ESU enrolled)
+System Type:               x64-based PC
+Total Physical Memory:     31,645 MB
+Available Physical Memory: 7,191 MB (at time of capture)
+Domain:                    WORKGROUP
+
+
+Hyper-V Virtual Machines
+=========================
+Note: Get-VM requires an elevated PowerShell session (Run as Administrator).
+      No VMs have been provisioned yet — this section will be updated in Lab 03
+      when the Windows 10 lab VM is created and configured.
+
+Expected output format when populated:
+  Name          State   Generation  MemoryAssigned(M)
+  ----          -----   ----------  -----------------
+  [lab-vm-name] Running 2           [assigned RAM]
+
+
+Tooling Baseline (HOST)
+========================
+Tools installed on host for lab use (read/analyze only — no system modification):
+  - Git (version control, commit/push from host)
+  - VS Code (editing, documentation)
+  - GitHub Desktop (repo sync)
+  - STIG Viewer (reads STIG checklists; does not apply them)
+  - Hyper-V Manager (manage lab VM; changes apply inside VM only)
+  - Microsoft Edge / Chrome (Azure portal, Entra admin center, browser-based labs)
