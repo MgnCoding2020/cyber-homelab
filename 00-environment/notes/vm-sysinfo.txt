@@ -1,0 +1,41 @@
+VM System Information — HomeEDR-lab-02
+Collected: 2026-07-01
+Note: Hostname and internal IPs redacted for public portfolio use.
+
+=== Operating System ===
+OS               : Microsoft Windows 10 Pro
+Version          : 10.0.19045
+Build            : 19045
+Architecture     : 64-bit
+
+=== Hardware (Hyper-V Guest) ===
+Hostname         : [vm-hostname]
+RAM              : 8 GB
+Logical CPUs     : 2
+Hyper-V Gen      : 1
+Host             : [host-hostname] (Hyper-V on Windows 10 ESU)
+
+=== Network ===
+Adapter          : Ethernet (Hyper-V internal switch)
+IPv4 Address     : [VM-IP] /20
+Default Gateway  : [VM-GW]
+DNS Suffix       : mshome.net
+IPv6             : link-local only
+
+=== Tooling Baseline ===
+Wireshark        : 4.6.6
+Nmap / Zenmap    : 7.98
+Git Bash         : installed
+Firefox          : 152.0
+Sysmon           : installed (logs on Desktop)
+Microsoft Edge   : installed
+
+=== Purpose ===
+Target VM for all hands-on labs requiring system changes:
+  - Lab 03: Networking (Wireshark captures, nmap scans)
+  - Lab 04: Active Directory (Windows Server eval, DC promotion, GPO)
+  - Lab 05: STIG & Compliance (hardening, evidence collection)
+
+Checkpoint strategy: Hyper-V checkpoint taken before each hardening lab,
+rolled back after. Baseline checkpoint "Baseline-Clean-Patched" exists
+as of 2026-03-02.
