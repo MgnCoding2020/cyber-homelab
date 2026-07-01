@@ -9,8 +9,6 @@ Updated as each lab completes or uncovers a gap.
 
 | ID | Finding / Task | Lab | Priority | Target date | Status |
 |----|---------------|-----|----------|-------------|--------|
-| 001 | Complete Entra ID user/group/RBAC configuration | 02 | High | — | In progress |
-| 002 | Wireshark TCP handshake + DNS + HTTP capture | 03 | Medium | — | Planned |
 | 003 | Windows Server DC promotion + client join | 04 | Medium | — | Planned |
 | 004 | Apply Windows 10 STIG, collect evidence | 05 | High | — | Planned |
 | 005 | Hybrid identity capstone (Entra Connect) | 06 | Low | — | Planned |
@@ -19,7 +17,10 @@ Updated as each lab completes or uncovers a gap.
 
 ## Closed items
 
-_None yet._
+| ID | Finding / Task | Lab | Priority | Closed date | Status |
+|----|---------------|-----|----------|-------------|--------|
+| 001 | Complete Entra ID user/group/RBAC configuration | 02 | High | 2026-06-29 | Closed |
+| 002 | Wireshark TCP handshake + DNS + HTTP capture | 03 | Medium | 2026-07-01 | Closed |
 
 ---
 

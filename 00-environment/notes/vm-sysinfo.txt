@@ -1,4 +1,4 @@
-VM System Information — HomeEDR-lab-02
+VM System Information — [vm-hostname]
 Collected: 2026-07-01
 Note: Hostname and internal IPs redacted for public portfolio use.
 

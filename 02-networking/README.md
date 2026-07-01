@@ -1,7 +1,7 @@
 # Lab 03 — Networking (Wireshark + nmap)
 
 > **Status:** Complete
-> **Where:** VM — all captures and scans run inside Hyper-V guest (HomeEDR-lab-02)
+> **Where:** VM — all captures and scans run inside Hyper-V guest ([vm-hostname])
 
 ## Problem
 
@@ -122,7 +122,8 @@ services will be evaluated against DISA STIG controls.
 | `scans/01-host-discovery.txt` | nmap -sn output — host up confirmation, hostname resolved |
 | `scans/02-port-scan.txt` | nmap -sV output — ports 135, 139, 445 open with service versions |
 
-All screenshots have VM IP addresses and interface identifiers redacted.
+All screenshots have VM IP addresses and interface identifiers redacted, and the
+VM hostname is referred to only as `[vm-hostname]` throughout this document.
 
 ---
 

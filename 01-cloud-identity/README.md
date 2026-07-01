@@ -28,7 +28,7 @@ full Global Administrator rights, which is necessary to configure Conditional Ac
 policies, assign roles, and manage licenses — all of which are locked down in
 managed educational tenants.
 
-The tenant's primary domain is `micnaulty.onmicrosoft.com`, created through the
+The tenant's primary domain is `<tenant>.onmicrosoft.com`, created through the
 Microsoft 365 licensing flow when activating the Entra ID P2 trial.
 
 **Lesson from this step:** Microsoft's multiple signup flows (Azure portal vs.
@@ -42,13 +42,13 @@ tenant is a standard remediation.
 
 ### 2. User provisioning
 
-Created two internal users in the `micnaulty` Entra ID tenant via the Microsoft 365
+Created two internal users in the `<tenant>` Entra ID tenant via the Microsoft 365
 admin center:
 
 | User | UPN | Purpose |
 |------|-----|---------|
-| Alice | `alice.admin@micnaulty.onmicrosoft.com` | Represents a security analyst with elevated read access |
-| Bob | `bob.reader@micnaulty.onmicrosoft.com` | Represents a standard user with no elevated permissions |
+| Alice | `alice.admin@<tenant>.onmicrosoft.com` | Represents a security analyst with elevated read access |
+| Bob | `bob.reader@<tenant>.onmicrosoft.com` | Represents a standard user with no elevated permissions |
 
 Both accounts were created as **Member** type (internal identities, not guest/B2B),
 with accounts enabled and no product licenses assigned. Lab users do not need
@@ -152,24 +152,26 @@ to enforcement mode. Enabling an untested CA policy as "On" can lock administrat
 out of the tenant.
 
 **Controls:**
-- NIST 800-53 **IA-2** (Identification and Authentication) — policy enforces
-  identity verification at sign-in.
+- NIST 800-53 **IA-2** (Identification and Authentication) — configured to require
+  identity verification at sign-in; **validated in report-only, enforcement pending**
+  since the policy has not yet been switched to "On."
 - NIST 800-53 **IA-2(1)** (MFA for privileged accounts) and **IA-2(2)** (MFA for
-  non-privileged accounts) — the "All users / All resources" scope satisfies both
-  enhancement requirements.
-- NIST 800-53 **AC-12** (Session Termination) — the 8-hour sign-in frequency
-  control enforces session expiry, limiting exposure from unattended or hijacked
-  sessions.
-- NIST 800-53 **CA-2** (Control Assessments) — Report-only mode functions as a
-  continuous assessment of the policy's effect before enforcement, consistent with
-  a test-before-enforce methodology.
+  non-privileged accounts) — the "All users / All resources" scope would satisfy
+  both enhancement requirements once enforced; **configured, not yet enforced**.
+- NIST 800-53 **AC-12** (Session Termination) and **IA-11** (Re-authentication) —
+  the 8-hour sign-in frequency bounds session lifetime and forces re-authentication
+  after a defined interval, limiting exposure from unattended or hijacked sessions
+  once enforced. IA-11 is the more precise cite for a re-authentication interval.
+- NIST 800-53 **CA-2** (Control Assessments) — **met**: Report-only mode functions
+  as a continuous assessment of the policy's effect before enforcement, consistent
+  with a test-before-enforce methodology.
 
 ---
 
 ## Evidence
 
 All screenshots are in `screenshots/`. Tenant ID and primary domain are redacted
-in all images.
+in all images and referred to only as `<tenant>` throughout this document.
 
 | File | What it shows |
 |------|---------------|
@@ -190,11 +192,12 @@ in all images.
 | AC-2: Account Management | NIST SP 800-53 | User accounts provisioned with defined attributes; group membership controls access lifecycle |
 | AC-3: Access Enforcement | NIST SP 800-53 | Security Reader role assigned to alice.admin; bob.reader receives no elevated access |
 | AC-6: Least Privilege | NIST SP 800-53 | Security Reader provides read-only access; P2 license assigned only to admin account |
-| AC-12: Session Termination | NIST SP 800-53 | CA policy enforces 8-hour sign-in frequency, expiring sessions after one work day |
-| IA-2: Identification and Authentication | NIST SP 800-53 | CA policy requires MFA for all users across all cloud apps |
-| IA-2(1): MFA — Privileged Accounts | NIST SP 800-53 | "All users" scope includes privileged accounts; satisfied by the CA policy |
-| IA-2(2): MFA — Non-Privileged Accounts | NIST SP 800-53 | "All users" scope includes standard accounts; satisfied by the CA policy |
-| CA-2: Control Assessments | NIST SP 800-53 | CA policy deployed in Report-only mode to assess impact before enforcement |
+| AC-12: Session Termination | NIST SP 800-53 | CA policy configures an 8-hour sign-in frequency, bounding session lifetime once enforced |
+| IA-11: Re-authentication | NIST SP 800-53 | 8-hour sign-in frequency is the more precise fit — it forces re-authentication after a defined interval |
+| IA-2: Identification and Authentication | NIST SP 800-53 | Configured; validated in report-only; enforcement pending — CA policy would require MFA for all users across all cloud apps once switched to "On" |
+| IA-2(1): MFA — Privileged Accounts | NIST SP 800-53 | Configured; validated in report-only; enforcement pending — "All users" scope includes privileged accounts |
+| IA-2(2): MFA — Non-Privileged Accounts | NIST SP 800-53 | Configured; validated in report-only; enforcement pending — "All users" scope includes standard accounts |
+| CA-2: Control Assessments | NIST SP 800-53 | Met — CA policy deployed in Report-only mode to assess impact before enforcement |
 
 ---
 
