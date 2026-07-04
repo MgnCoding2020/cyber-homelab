@@ -168,6 +168,100 @@ out of the tenant.
 
 ---
 
+### 6. Privileged Identity Management (PIM) — standing access to just-in-time
+
+`alice.admin`'s Security Reader assignment started as a standing **Active (Direct)**
+assignment with no expiration — the same configuration created in step 4. Using PIM,
+that was converted to a **PIM-eligible** assignment, and the original standing
+assignment was removed.
+
+| Field | Before | After |
+|-------|--------|-------|
+| Assignment type | Active (Direct) | Eligible (Direct) |
+| Duration | Permanent | Permanently eligible |
+| Standing access | Yes | No — requires activation |
+
+**Why this matters:** a standing privileged assignment is accessible the instant the
+account is compromised. An eligible assignment has no access until it is explicitly
+activated, shrinking the window an attacker (or a compromised credential) could exploit
+the role.
+
+**Controls:**
+- NIST 800-53 **AC-2(7)** (Privileged User Accounts) — **met**: Security Reader is no
+  longer a standing assignment; eligibility replaces persistent access.
+- NIST 800-53 **AC-6** (Least Privilege) — reinforced: privileged access now exists
+  only when actively invoked, not by default.
+
+---
+
+### 7. Access Reviews — recertifying the PIM-eligible assignment
+
+Created a one-time access review, **Reader Role Recertification**, scoped to the
+Security Reader role and covering all active and eligible assignments (i.e., Alice's
+new PIM-eligible assignment from step 6). "Require reason on approval" was enabled.
+
+| Field | Value |
+|-------|-------|
+| Scope | Microsoft Entra roles — Security Reader |
+| Assignment type reviewed | All active and eligible assignments |
+| Reviewer | Global Administrator (self — no second admin exists in this lab tenant) |
+| Frequency | One-time |
+| Require reason on approval | Enabled |
+| Outcome | **Approved** — "Still requires read access for lab monitoring tasks." |
+
+**Notable detail:** Entra's system-generated recommendation was **Deny**, based on
+Alice's account having no sign-in activity in the last 30 days. The reviewer's actual
+decision was **Approve**, with a recorded justification overriding that recommendation.
+That gap is the point of an access review — the recommendation engine flags dormant
+access, but a human reviewer makes and documents the final call. That produces an
+auditable decision trail, not a rubber stamp.
+
+**Controls:**
+- NIST 800-53 **AC-2(3)** (Disable Accounts) — **met**: the privileged assignment was
+  formally recertified with a recorded decision and justification, the mechanism this
+  enhancement requires for periodic review of account necessity.
+- NIST 800-53 **CA-7** (Continuous Monitoring) — **met**: the access review functions
+  as a point-in-time assessment of a privileged assignment's continued necessity.
+
+---
+
+### 8. Risk-based Conditional Access policy
+
+Created a second CA policy, layering sign-in risk detection on top of the existing
+MFA baseline policy from step 5.
+
+| Field | Value |
+|-------|-------|
+| Policy name | `risk-based-signin-mfa` |
+| Users | `alice.admin`, `bob.reader` — **admin account deliberately excluded** |
+| Target resources | All cloud apps |
+| Conditions | Sign-in risk: Medium and High |
+| Grant control | Require multifactor authentication |
+| State | Report-only |
+
+**Why the admin account is excluded:** this mirrors the standard break-glass/admin
+exclusion pattern used for Conditional Access policies in production tenants — a false
+positive on sign-in risk should never be able to lock out the only administrator, even
+though Report-only mode carries no enforcement risk today.
+
+**Caveat — configured, not exercised:** this is a fresh trial tenant with no real
+attacker telemetry (no genuine anomalous sign-ins, impossible travel, or leaked
+credentials to detect). Identity Protection's risk engine will most likely never
+generate a genuine Medium/High risk signal here. This control is documented as
+**configured only**, demonstrating how the policy is constructed rather than claiming
+it has been operationally validated — the same configured-vs-enforced precision
+applied to the MFA policy in step 5.
+
+**Controls:**
+- NIST 800-53 **AC-2(12)** (Account Monitoring for Atypical Usage) — **configured,
+  not exercised**: the policy acts on atypical sign-in risk signals, but no genuine
+  risk event has occurred in this tenant to validate it end-to-end.
+- NIST 800-53 **IA-2** (Identification and Authentication) — **configured**: requires
+  an additional authentication factor specifically when risk is detected, layered on
+  top of the baseline MFA policy.
+
+---
+
 ## Evidence
 
 All screenshots are in `screenshots/`. Tenant ID and primary domain are redacted
@@ -182,6 +276,13 @@ in all images and referred to only as `<tenant>` throughout this document.
 | `05-role-assignment.png` | Security Reader role assignments — Alice listed at Directory scope |
 | `06-conditional-access-policy.png` | CA policy configuration — assignments, grant, and session controls |
 | `07-ca-policy-enabled.png` | CA policies list — `require-mfa-all-users` in Report-only state |
+| `08-pim-security-reader-active-before.png` | PIM Security Reader assignments — Alice as standing Active/Direct/Permanent, before conversion |
+| `09-pim-security-reader-eligible.png` | PIM Security Reader assignments — Alice as Eligible/Permanent, after conversion |
+| `10-pim-security-reader-active-removed.png` | PIM Security Reader Active assignments — empty, confirming standing access removed |
+| `11-access-review-created.png` | Access Reviews list — "Reader Role Recertification," status Not started |
+| `12-access-review-pending.png` | Access review results — Alice Not reviewed, system-recommended action: Deny |
+| `13-access-review-completed.png` | Access review results — Alice Approved, reviewed by Global Administrator |
+| `14-conditional-access-policies-list.png` | CA policies list — both policies shown, `risk-based-signin-mfa` in Report-only state |
 
 ---
 
@@ -198,6 +299,10 @@ in all images and referred to only as `<tenant>` throughout this document.
 | IA-2(1): MFA — Privileged Accounts | NIST SP 800-53 | Configured; validated in report-only; enforcement pending — "All users" scope includes privileged accounts |
 | IA-2(2): MFA — Non-Privileged Accounts | NIST SP 800-53 | Configured; validated in report-only; enforcement pending — "All users" scope includes standard accounts |
 | CA-2: Control Assessments | NIST SP 800-53 | Met — CA policy deployed in Report-only mode to assess impact before enforcement |
+| AC-2(7): Privileged User Accounts | NIST SP 800-53 | Met — Security Reader converted from standing Active assignment to PIM-eligible; no persistent access |
+| AC-2(3): Disable Accounts | NIST SP 800-53 | Met — PIM-eligible assignment formally recertified via a one-time Access Review with recorded justification |
+| CA-7: Continuous Monitoring | NIST SP 800-53 | Met — Access Review functions as a point-in-time assessment of a privileged assignment's continued necessity |
+| AC-2(12): Account Monitoring for Atypical Usage | NIST SP 800-53 | Configured, not exercised — risk-based CA policy acts on sign-in risk signals, but no genuine risk event has occurred to validate it |
 
 ---
 
