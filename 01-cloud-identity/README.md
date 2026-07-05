@@ -192,9 +192,27 @@ the role.
 - NIST 800-53 **AC-6** (Least Privilege) — reinforced: privileged access now exists
   only when actively invoked, not by default.
 
+**PIM Role Settings — adding an approval workflow to activation.** By default, an
+eligible assignment can be self-activated with only a typed justification and no
+oversight. The Security Reader role's settings were edited to also **require approval**
+before activation, with the Global Administrator set as the approver.
+
+| Setting | Before | After |
+|---------|--------|-------|
+| Require approval to activate | No | **Yes** (Approver: Global Administrator) |
+| Require justification on activation | Yes | Yes (unchanged) |
+
+This turns self-service JIT access into a two-party control: `alice.admin` can request
+activation, but the role does not actually grant access until an approver signs off —
+closer to a real separation-of-duties model than eligibility alone provides.
+
+**Control:**
+- NIST 800-53 **AC-3** (Access Enforcement) — reinforced: activation now requires
+  a second party's explicit approval, not just self-service eligibility.
+
 ---
 
-### 7. Access Reviews — recertifying the PIM-eligible assignment
+### 8. Access Reviews — recertifying the PIM-eligible assignment
 
 Created a one-time access review, **Reader Role Recertification**, scoped to the
 Security Reader role and covering all active and eligible assignments (i.e., Alice's
@@ -225,7 +243,7 @@ auditable decision trail, not a rubber stamp.
 
 ---
 
-### 8. Risk-based Conditional Access policy
+### 9. Risk-based Conditional Access policy
 
 Created a second CA policy, layering sign-in risk detection on top of the existing
 MFA baseline policy from step 5.
@@ -279,6 +297,8 @@ in all images and referred to only as `<tenant>` throughout this document.
 | `08-pim-security-reader-active-before.png` | PIM Security Reader assignments — Alice as standing Active/Direct/Permanent, before conversion |
 | `09-pim-security-reader-eligible.png` | PIM Security Reader assignments — Alice as Eligible/Permanent, after conversion |
 | `10-pim-security-reader-active-removed.png` | PIM Security Reader Active assignments — empty, confirming standing access removed |
+| `15-pim-role-settings-before.png` | Security Reader role settings — before, no approval required to activate |
+| `16-pim-role-settings-after.png` | Security Reader role settings — after, approval + justification both required to activate |
 | `11-access-review-created.png` | Access Reviews list — "Reader Role Recertification," status Not started |
 | `12-access-review-pending.png` | Access review results — Alice Not reviewed, system-recommended action: Deny |
 | `13-access-review-completed.png` | Access review results — Alice Approved, reviewed by Global Administrator |
@@ -300,6 +320,7 @@ in all images and referred to only as `<tenant>` throughout this document.
 | IA-2(2): MFA — Non-Privileged Accounts | NIST SP 800-53 | Configured; validated in report-only; enforcement pending — "All users" scope includes standard accounts |
 | CA-2: Control Assessments | NIST SP 800-53 | Met — CA policy deployed in Report-only mode to assess impact before enforcement |
 | AC-2(7): Privileged User Accounts | NIST SP 800-53 | Met — Security Reader converted from standing Active assignment to PIM-eligible; no persistent access |
+| AC-3: Access Enforcement (reinforced) | NIST SP 800-53 | Met — PIM Role Settings now require approver sign-off, not just self-service justification, before activation |
 | AC-2(3): Disable Accounts | NIST SP 800-53 | Met — PIM-eligible assignment formally recertified via a one-time Access Review with recorded justification |
 | CA-7: Continuous Monitoring | NIST SP 800-53 | Met — Access Review functions as a point-in-time assessment of a privileged assignment's continued necessity |
 | AC-2(12): Account Monitoring for Atypical Usage | NIST SP 800-53 | Configured, not exercised — risk-based CA policy acts on sign-in risk signals, but no genuine risk event has occurred to validate it |
