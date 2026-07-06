@@ -1,10 +1,10 @@
 ﻿**********************
 Windows PowerShell transcript start
 Start time: 20260706071307
-Username: WIN-MJU7GUVKPVD\Administrator
-RunAs User: WIN-MJU7GUVKPVD\Administrator
+Username: [vm-hostname]\Administrator
+RunAs User: [vm-hostname]\Administrator
 Configuration Name: 
-Machine: WIN-MJU7GUVKPVD (Microsoft Windows NT 10.0.20348.0)
+Machine: [vm-hostname] (Microsoft Windows NT 10.0.20348.0)
 Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
 Process ID: 1272
 PSVersion: 5.1.20348.558
@@ -18,7 +18,7 @@ SerializationVersion: 1.1.0.1
 **********************
 Transcript started, output file is C:\Lab-Evidence\01-network-config.txt
 PS C:\Users\Administrator> Rename-Computer -NewName "lab-dc-01"
-WARNING: The changes will take effect after you restart the computer WIN-MJU7GUVKPVD.
+WARNING: The changes will take effect after you restart the computer [vm-hostname].
 PS C:\Users\Administrator> New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress [DC-IP] -PrefixLength 20 -DefaultGateway [GATEWAY-IP]
 
 
