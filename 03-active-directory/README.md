@@ -1,7 +1,7 @@
 # Lab 04 — Active Directory
 
-> **Status:** Planned
-> **Where:** VM — Windows Server eval, all changes inside the Hyper-V guest
+> **Status:** In progress
+> **Where:** VM — Windows Server 2022 Evaluation (`lab-dc-01`), all changes inside the Hyper-V guest
 
 ## Problem
 
@@ -13,7 +13,17 @@ _To be completed._
 
 ## Evidence
 
-_Scripts and screenshots will be added to `scripts/` and `screenshots/` as the lab progresses._
+- `screenshots/` — numbered screenshots of key setup and configuration steps.
+- `scripts/` — cleaned/reference PowerShell for each configuration phase (network config, AD DS
+  promotion, OU/GPO setup), matching what was actually run.
+- `transcripts/` — raw `Start-Transcript` logs captured live inside the VM during each phase,
+  as evidence the commands were actually executed (not just documented after the fact). Sanitized
+  before commit — see note below.
+
+**Sanitization note:** transcripts capture everything typed and displayed, including full command
+output. Before committing, review each transcript for anything that shouldn't be public: real
+passwords (never type one directly into a command that gets logged — use `Get-Credential` or
+`Read-Host -AsSecureString` instead), and mask any internal IPs consistent with the rest of the repo.
 
 ## Control mapping
 
