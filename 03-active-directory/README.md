@@ -20,10 +20,16 @@ and audited from one place.
   `corp.lab` (NetBIOS `CORP`), with DNS installed alongside.
 - **Phase 3 — post-promotion verification:** Confirmed the forest and domain came up correctly with
   `Get-ADDomain` / `Get-ADForest` after the automatic post-promotion reboot.
+- **Phase 4 — OU structure, group/user, and a GPO (all via GUI):** Built an OU hierarchy in Active
+  Directory Users and Computers (`Lab-Corp` with `Users`/`Groups`/`Computers` sub-OUs), created a
+  `IT-Admins` security group and a `Jane Doe` (`jdoe`) test user as a member of it, then in Group
+  Policy Management created `Audit-Policy-Baseline` (Computer Configuration → Advanced Audit Policy
+  Configuration → Logon/Logoff → Audit Logon, Success + Failure) and linked it to `Lab-Corp`, and
+  checked the resulting DNS zone AD DS auto-created for `corp.lab`.
 
-**Next (Phase 4, not yet started):** create an OU structure, join a client VM to `corp.lab`, and push
-a GPO — this is where the AU-2 and account-lifecycle controls below actually get enforced rather than
-just made possible.
+**Next (Phase 5, not yet started):** join a client VM to `corp.lab` under the `Computers` OU and
+confirm with `gpresult /r` that `Audit-Policy-Baseline` actually applies — this is what moves AU-2
+below from *configured* to *enforced*. **Take a Hyper-V checkpoint of the client VM before joining.**
 
 ## Evidence
 
@@ -32,6 +38,17 @@ just made possible.
 | 1 — Network config | `scripts/01-network-config.ps1` | `transcripts/01-network-config.txt` |
 | 2 — AD DS + forest promotion | `scripts/02-adds-forest.ps1` | `transcripts/02-adds-forest.txt` |
 | 3 — Post-promotion verification | `scripts/03-post-promo-verify.ps1` | `transcripts/03-post-promo-verify.txt` |
+
+| Phase 4 screenshot | Tool | Shows |
+|---------------------|------|-------|
+| `screenshots/01-server-manager-dashboard.png` | Server Manager | Installed roles (AD DS, DNS) |
+| `screenshots/02-aduc-ou-structure.png` | ADUC | `Lab-Corp` OU with `Users`/`Groups`/`Computers` |
+| `screenshots/03-aduc-security-group.png` | ADUC | `IT-Admins` group, Global/Security |
+| `screenshots/04-aduc-user-account.png` | ADUC | `Jane Doe` (`jdoe`), member of `IT-Admins` |
+| `screenshots/05-gpmc-gpo-created.png` | GPMC | `Audit-Policy-Baseline` GPO created |
+| `screenshots/06-gpmc-audit-policy-setting.png` | Group Policy Mgmt Editor | Audit Logon set to Success and Failure, scoped precisely (no other subcategories touched) |
+| `screenshots/07-gpmc-gpo-linked.png` | GPMC | GPO linked under `Lab-Corp` |
+| `screenshots/08-dns-manager-corp-lab-zone.png` | DNS Manager | `corp.lab` zone auto-created by Phase 2's `-InstallDns:$true`; IPs redacted |
 
 - `screenshots/` — numbered screenshots of key setup and configuration steps.
 - `scripts/` — cleaned/reference PowerShell for each configuration phase, matching what was
@@ -73,10 +90,10 @@ Two gotchas hit during Phase 2/3:
 
 | Control | Source | Status | Relevance |
 |---------|--------|--------|-----------|
-| AC-2: Account Management | NIST SP 800-53 | Configured | Forest/domain established as the central point for account lifecycle management; no OUs or delegated management yet (Phase 4) |
+| AC-2: Account Management | NIST SP 800-53 | Configured | Forest/domain plus a real OU/group/user structure (`Lab-Corp` → `Users`/`Groups`/`Computers`, `IT-Admins`, `jdoe`) for account lifecycle management |
 | IA-2: Identification and Authentication | NIST SP 800-53 | Configured | Domain-based authentication (Kerberos/NTLM via AD DS) replaces per-machine local SAM accounts |
 | CM-6: Configuration Settings | NIST SP 800-53 | Configured | Forest/domain functional level and integrated DNS set at promotion time |
-| AU-2: Event Logging | NIST SP 800-53 | Planned | Audit policy via GPO not yet configured — targeted for Phase 4 |
+| AU-2: Event Logging | NIST SP 800-53 | Configured; enforcement pending | `Audit-Policy-Baseline` GPO (Audit Logon Success+Failure) created and linked to `Lab-Corp`, but no client machine object exists under `Computers` yet to actually receive and apply it — enforcement verification is Phase 5 (`gpresult /r` after a client domain-join) |
 
 ## What I learned
 
@@ -85,3 +102,9 @@ identity model: the local `Administrator` account that worked for PowerShell Dir
 stops authenticating post-promotion, and `CORP\Administrator` (same password, different account) takes
 over. That distinction — a real behavior of `Install-ADDSForest`, not a guess — was the main
 troubleshooting moment of this phase and is worth remembering before Phase 4's client domain-join.
+
+Phase 4 reinforced that a GPO isn't "on" just because it exists: creating `Audit-Policy-Baseline` and
+linking it to `Lab-Corp` only makes the policy *available* to anything under that OU — since
+`Computers` is currently empty, nothing has actually received it yet. Configured and enforced are
+different claims, and a control mapping should say which one is true rather than assume creating the
+GPO is the whole job.
