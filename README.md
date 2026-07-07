@@ -25,7 +25,7 @@ Every lab README explains the problem, what I did, the evidence that supports it
 | 01 | [Environment & Repo Setup](00-environment/) | Complete | CM-2, PL-2 |
 | 02 | [Cloud Identity (Entra / Azure)](01-cloud-identity/) | Complete | AC-2, AC-2(3), AC-2(7), AC-2(12), AC-3, AC-6, AC-12, IA-2, IA-2(1), IA-2(2), IA-11, CA-2, CA-7 |
 | 03 | [Networking](02-networking/) | Complete | SI-4, CA-7, CM-7, SC-8, SC-28, AU-12 |
-| 04 | [Active Directory](03-active-directory/) | Planned | AC-2, CM-6, AU-2 |
+| 04 | [Active Directory](03-active-directory/) | In progress | AC-2, IA-2, CM-6, AU-2 |
 | 05 | [STIG & Compliance](04-stig-compliance/) | Planned | CM-6, CM-7, SI-2 |
 | 06 | Capstone: Hybrid Identity | Planned | Multiple |
 

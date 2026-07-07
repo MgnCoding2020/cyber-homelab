@@ -9,95 +9,50 @@
 
 ## 📋 Current status & audit snapshot
 
-_Last reviewed: 2026-07-01 (full file-level review)_
+_Last reviewed: 2026-07-07_
 
 ### Lab completion
 
 | # | Lab | Folder | Status |
 |---|-----|--------|--------|
 | 01 | Environment & Repo | `00-environment/` | ✅ Complete |
-| 02 | Cloud Identity (Entra / Azure) | `01-cloud-identity/` | ✅ Complete* |
-| 03 | Networking (Wireshark / nmap) | `02-networking/` | ✅ Complete* |
-| 04 | Active Directory | `03-active-directory/` | ⬜ Planned (next up) |
+| 02 | Cloud Identity (Entra / Azure) | `01-cloud-identity/` | ✅ Complete (PIM, Access Reviews, risk-based CA added) |
+| 03 | Networking (Wireshark / nmap) | `02-networking/` | ✅ Complete |
+| 04 | Active Directory | `03-active-directory/` | 🟡 In progress — Phases 1–4 done (network config, forest promotion, OU/group/user, GPO); Phase 5 (client join + `gpresult /r` verification) next |
 | 05 | STIG & Compliance | `04-stig-compliance/` | ⬜ Planned |
 | 06 | Capstone: Hybrid Identity | — | ⬜ Planned |
 
-*\*Labs 02–03 are technically complete but have publish-blocking hygiene fixes
-open below (H1–H2). They are **not** clean to make public until those are done.*
-
 ### Health
 
-- **Structure is solid** and reads like an audit trail, as intended.
+- The original HIGH/MEDIUM/LOW remediation queue (tenant identifier leak, VM
+  hostname leak, stale index, POA&M drift, screenshot casing, GRC precision on
+  the Report-only CA policy) was fully resolved in commit `c0a173f` — nothing
+  open there. If new evidence gets added, re-check it against the **Conventions**
+  section below rather than assuming it's still clean.
 - **Per-lab control mapping (NIST SP 800-53) is the core strength** — it's what
-  turns technical work into a GRC signal. Keep it first-class in every lab.
-- Completed labs (01–03) have real configuration plus evidence. Sanitization is
-  mostly good (scan `.txt` outputs and sysinfo file *bodies* use placeholders
-  correctly), but two identifiers slipped through in prose — see H1/H2.
-
-### 🔴 Remediation queue — work this top-down
-
-**HIGH — fix before the repo is ever made public or shown to a reviewer**
-
-- **H1 — Tenant identifier leak.** `01-cloud-identity/README.md` prints the real
-  Entra tenant domain/name in prose (~4 places, including two user UPNs) even
-  though the file claims the domain is "redacted in all images." The images may be
-  clean; the markdown is not. Replace every instance with a placeholder
-  (`<tenant>.onmicrosoft.com`, UPNs as `alice.admin@<tenant>.onmicrosoft.com`).
-  This is exactly the tenant-ID class the Conventions section says never to commit.
-- **H2 — VM hostname leak.** The real VM hostname appears in the `02-networking/README.md`
-  "Where:" header **and** in the title line of `00-environment/notes/vm-sysinfo.txt`,
-  despite both claiming the hostname is redacted (the sysinfo *body* is correctly
-  masked). Replace both with `[vm-hostname]`.
-- **After H1/H2:** re-word the "redacted in all images" lines in both READMEs so
-  the claim is actually true. A redaction claim sitting next to a live identifier
-  undermines trust in every other claim in the repo.
-
-**MEDIUM — accuracy & broken links**
-
-- **M1 — Stale front-door index.** `README.md` lab index lists Networking (Lab 03)
-  as *Planned*; it is **Complete** with full evidence. Update the status cell.
-- **M2 — POA&M out of date.** `docs/poam.md` items 001 (Entra) and 002 (Wireshark)
-  are still *In progress / Planned* but their labs are done. Move both to the
-  "Closed items" section (currently empty) with completion dates.
-- **M3 — Screenshot filename case/name.** Files on disk are uppercase `.PNG`; the
-  READMEs reference lowercase `.png`. GitHub is case-sensitive, so links break once
-  they're clickable. Also `03-user-list.PNG` on disk is referenced as
-  `03-users-list.png`. Standardize all files to lowercase `.png` and reconcile the
-  one mismatched name against the README.
-
-**LOW — polish**
-
-- **L1 — Credentials line.** `README.md` "Certifications" still says
-  "Pursuing B.A. in Cybersecurity." Correct to **B.S. in Cybersecurity and
-  Information Assurance** and add **ITIL 4 Foundation** (already fixed in this file).
-- **L2 — Index mappings are subsets.** The front-door index lists fewer controls
-  per lab than the lab READMEs actually map (e.g., Lab 02 README also covers
-  IA-2(2) and CA-2; Lab 03 also covers CM-7 / SC-8 / SC-28 / AU-12). Optional: sync
-  for completeness.
-
-**GRC-PRECISION — sharpens the portfolio signal (do alongside L-items)**
-
-- **P1 — Don't overstate the Report-only CA policy.** In `01-cloud-identity/README.md`,
-  the Conditional Access policy is in **Report-only**, so it does **not** enforce MFA
-  yet — sign-ins are logged as if it applied, but access is granted regardless.
-  Mapping IA-2, IA-2(1), and IA-2(2) as *satisfied* overstates it. Reframe those
-  rows as **"configured; validated in report-only; enforcement pending."** CA-2
-  (assessment) is correctly *met*. Knowing configured-vs-enforced is the assessor's
-  whole job — this is the highest-value single edit for GRC credibility.
-- **P2 — Tighter control cite.** The 8-hour sign-in frequency maps more precisely to
-  **IA-11 (Re-authentication)** than AC-12 (Session Termination). AC-12 isn't wrong
-  if framed as bounding session lifetime, but adding IA-11 reads as real Rev 5 fluency.
+  turns technical work into a GRC signal. Keep it first-class in every lab,
+  including the *configured vs. enforced* distinction (see Lab 04's AU-2, which
+  is honestly marked enforcement-pending until Phase 5's client join).
+- **Entra ID P2 trial** started 2026-06-29, expires 2026-07-28 — cancel by
+  **2026-07-20** to avoid the $10.80/mo charge. Entitlement Management/Access
+  Packages was deliberately scoped out as too deep for this lab's
+  breadth-over-depth goal; don't re-propose it unless the user raises it.
 
 ### ✅ Verified good — no action
 
 - `.claude/` is correctly gitignored and **untracked** (confirmed via `git ls-files`).
-- Scan `.txt` outputs and the sysinfo file *bodies* are sanitized with placeholders.
-- Stub READMEs for Labs 04–05 are honestly marked *Planned* — no overclaiming.
+- Scan `.txt` outputs, AD transcripts, and sysinfo file *bodies* are sanitized
+  with placeholders.
+- Stub README for Lab 05 is honestly marked *Planned* — no overclaiming.
 
-### Next up (after the HIGH items)
+### Next up
 
-- **Lab 04 (Active Directory):** Windows Server eval in the VM — promote a DC, join
-  a client, push a GPO. **Take a Hyper-V checkpoint first.**
+- **Lab 04 Phase 5 (VM required):** join a client VM to `corp.lab` under the
+  `Computers` OU, then confirm `Audit-Policy-Baseline` actually applies via
+  `gpresult /r`. **Take a Hyper-V checkpoint of the client VM before joining.**
+- **Host-only, no VM needed:** more Entra ID P2 work (e.g., reviewing Entra
+  sign-in/audit logs for AU-2/AU-6 evidence — not yet demonstrated in Lab 02),
+  or docs/glossary/POA&M upkeep.
 
 ---
 

@@ -9,7 +9,7 @@ Updated as each lab completes or uncovers a gap.
 
 | ID | Finding / Task | Lab | Priority | Target date | Status |
 |----|---------------|-----|----------|-------------|--------|
-| 003 | Windows Server DC promotion + client join | 04 | Medium | — | Planned |
+| 003 | Client VM domain-join + `gpresult /r` verification that `Audit-Policy-Baseline` applies (Phase 5) | 04 | Medium | — | In progress — DC promotion, OU/group/user, and GPO creation (Phases 1–4) complete |
 | 004 | Apply Windows 10 STIG, collect evidence | 05 | High | — | Planned |
 | 005 | Hybrid identity capstone (Entra Connect) | 06 | Low | — | Planned |
 
