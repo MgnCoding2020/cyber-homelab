@@ -49,3 +49,7 @@ secrets.*
 *.tmp
 *.log
 ~$*
+
+# ── Generated reports ─────────────────────────────────────────────────────────
+# Regenerated on demand by docs/scripts/ — commit the script, not its output
+docs/reports/
