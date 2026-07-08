@@ -334,6 +334,49 @@ top of that baseline, not the only thing standing between this tenant and unauth
 
 ---
 
+### 11. Authentication Strengths — requiring phishing-resistant MFA for privileged roles
+
+Every CA policy so far used the generic **"Require multifactor authentication"** grant control,
+which is satisfied by any registered method — including phishable ones like SMS or a phone call.
+Created a fourth CA policy that requires a specific, stronger **authentication strength** instead,
+scoped directly to a privileged role rather than to individual test users.
+
+| Field | Value |
+|-------|-------|
+| Policy name | `require-phishing-resistant-mfa-privileged-roles` |
+| Users | Directory roles → **Global Administrator** (no exclusions) |
+| Target resources | All resources (all cloud apps) |
+| Conditions | None configured |
+| Grant control | **Require authentication strength → Phishing-resistant MFA** |
+| Session control | None |
+| State | Report-only |
+
+**Why authentication strength, not just "require MFA":** the built-in **Phishing-resistant MFA**
+strength only accepts FIDO2 security keys, Windows Hello for Business, or certificate-based
+authentication — it explicitly excludes SMS, voice call, and password+OTP, all of which can be
+defeated by a real-time phishing proxy (adversary-in-the-middle). "MFA is satisfied" and "MFA is
+phishing-resistant" are different claims, and current zero-trust guidance (e.g., CISA, OMB M-22-09)
+treats them as different maturity levels — this policy demonstrates the stronger one specifically
+for the tenant's highest-privilege role.
+
+**Why scoped to a directory role, not to `alice.admin`/`bob.reader`:** the two earlier CA
+policies (steps 5 and 9) both exclude the Global Administrator account, so neither has ever
+evaluated against real sign-in activity — the sign-in log review in step 10 could only observe
+"Not applied." Scoping this policy directly to the Global Administrator role instead means it
+evaluates against every real admin sign-in going forward, closing that exact gap.
+
+**Controls:**
+- NIST 800-53 **IA-2(1)** (MFA — Privileged Accounts) — **configured**, more precisely than the
+  baseline MFA policy: requires a specific phishing-resistant method, not merely "any MFA," for
+  the account with the highest privilege in the tenant.
+- NIST 800-53 **AC-2(7)** (Privileged User Accounts) — reinforced: the strongest available
+  authentication control is applied specifically at the privileged-role boundary, layered on top
+  of the JIT/PIM controls from step 6.
+- NIST 800-53 **CA-2** (Control Assessments) — met: deployed in Report-only, following the same
+  test-before-enforce methodology as every other CA policy in this lab.
+
+---
+
 ## Evidence
 
 All screenshots are in `screenshots/`. Tenant ID and primary domain are redacted
@@ -359,6 +402,7 @@ in all images and referred to only as `<tenant>` throughout this document.
 | `14-conditional-access-policies-list.png` | CA policies list — both policies shown, `risk-based-signin-mfa` in Report-only state |
 | `17-signin-report-only-results.png` | Sign-in activity detail, Report-only tab — both custom CA policies evaluated, result "Not applied" |
 | `18-require-mfa-policy-assignments.png` | `require-mfa-all-users` policy summary — assignments and session controls, confirming the "all users included and specific users excluded" scope |
+| `19-ca-policy-phishing-resistant-mfa.png` | `require-phishing-resistant-mfa-privileged-roles` policy details — 1 role included (Global Administrator), all resources, Report-only |
 
 ---
 
@@ -383,6 +427,8 @@ in all images and referred to only as `<tenant>` throughout this document.
 | AU-2: Event Logging | NIST SP 800-53 | Met — Entra natively generates and retains sign-in and Conditional Access evaluation events |
 | AU-6: Audit Review, Analysis, and Reporting | NIST SP 800-53 | Met — sign-in log review directly surfaced an undocumented policy exclusion and corrected the record |
 | CM-6: Configuration Settings | NIST SP 800-53 | Met — documented policy scope was compared against actual configured scope, catching a real drift on `require-mfa-all-users` |
+| IA-2(1): MFA — Privileged Accounts (precise) | NIST SP 800-53 | Configured — `require-phishing-resistant-mfa-privileged-roles` requires FIDO2/Windows Hello/certificate-based auth specifically for the Global Administrator role, a stronger claim than generic "require MFA" |
+| AC-2(7): Privileged User Accounts (reinforced) | NIST SP 800-53 | Reinforced — strongest available authentication control applied directly at the privileged-role boundary, layered on the JIT/PIM controls from step 6 |
 
 ---
 
