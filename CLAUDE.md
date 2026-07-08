@@ -50,9 +50,14 @@ _Last reviewed: 2026-07-07_
 - **Lab 04 Phase 5 (VM required):** join a client VM to `corp.lab` under the
   `Computers` OU, then confirm `Audit-Policy-Baseline` actually applies via
   `gpresult /r`. **Take a Hyper-V checkpoint of the client VM before joining.**
-- **Host-only, no VM needed:** more Entra ID P2 work (e.g., reviewing Entra
-  sign-in/audit logs for AU-2/AU-6 evidence — not yet demonstrated in Lab 02),
-  or docs/glossary/POA&M upkeep.
+- **Host-only, no VM needed:** Lab 02's sign-in/audit log review (AU-2, AU-6) is
+  now done — it also caught and corrected an undocumented admin exclusion on
+  `require-mfa-all-users` and clarified that Security Defaults, not the
+  Report-only CA policies, is what's actually enforcing MFA today. Remaining
+  P2 headroom before the 2026-07-20 cancel date: exercising the two Report-only
+  CA policies against their real target scope (`alice.admin`/`bob.reader` have
+  never signed in interactively, so neither policy has a real Success/Failure
+  result yet — only "Not applied" against the excluded admin account).
 
 ---
 

@@ -280,6 +280,60 @@ applied to the MFA policy in step 5.
 
 ---
 
+### 10. Sign-in log review — validating configured CA policies against live evaluation
+
+Reviewed the Entra ID sign-in logs (`Identity → Monitoring & health → Sign-in logs`) to confirm
+the two Report-only CA policies from steps 5 and 9 are actually being evaluated against real
+sign-ins, not just sitting configured and unused.
+
+**Lesson — two separate tabs, not one.** A sign-in's activity detail panel has both a
+**Conditional Access** tab and a separate **Report only** tab. The Conditional Access tab only
+lists policies actually set to **On** (plus **Security Defaults**, a distinct tenant-wide
+baseline — see below); a policy in **Report-only** state is evaluated and logged, but its result
+only shows up on the separate **Report only** tab. Checking the wrong tab first made it look like
+neither custom policy was running at all.
+
+| Policy | Report-only result on the admin's sign-in |
+|--------|------|
+| `require-mfa-all-users` | Not applied |
+| `risk-based-signin-mfa` | Not applied |
+
+**Finding — undocumented admin exclusion.** Checking the policies' **Exclude** tab (not just
+Include, which is all step 5's original write-up covered) turned up that `require-mfa-all-users`
+excludes the tenant's Global Administrator account. This wasn't previously documented — only
+`risk-based-signin-mfa`'s admin exclusion (step 9) was. It's the same standard break-glass
+rationale, just missing from the record until this review caught it. Both policies' "Not applied"
+result above is fully explained by this: the admin account is the only one that has ever signed
+in interactively in this tenant, and both policies exclude it by design.
+
+**Caveat — target scope still unexercised.** `alice.admin` and `bob.reader` — the accounts these
+policies actually target — have never authenticated interactively in this tenant (provisioned,
+never used to sign in). So neither policy has ever produced a Report-only **Success/Failure**
+result against its real target scope; "Not applied" against the excluded admin account is the
+only evaluation evidence available today. Actually exercising either policy requires signing in
+as `alice.admin` or `bob.reader` at least once.
+
+**Finding — Security Defaults is enabled and already enforcing baseline MFA.** Separate from
+both custom CA policies, this tenant has **Security Defaults** enabled, which requires MFA
+tenant-wide today — not report-only, not pending. Baseline MFA enforcement already exists in
+this tenant; `require-mfa-all-users` is a more granular, still-validating replacement layered on
+top of that baseline, not the only thing standing between this tenant and unauthenticated access.
+
+**Controls:**
+- NIST 800-53 **AU-2** (Event Logging) — met: Entra natively generates and retains sign-in and
+  Conditional Access evaluation events; no configuration was required to enable this.
+- NIST 800-53 **AU-6** (Audit Review, Analysis, and Reporting) — met: this review of the sign-in
+  and CA evaluation logs directly surfaced an undocumented policy exclusion and corrected the
+  record — exactly the point of log review as a control.
+- NIST 800-53 **IA-2** (Identification and Authentication) — reframe: **Security Defaults already
+  enforces MFA tenant-wide**, separate from and prior to the custom CA policies in steps 5 and 9,
+  which remain Report-only and layered on top for more granular, risk-aware control.
+- NIST 800-53 **CM-6** (Configuration Settings) — met: comparing documented policy scope against
+  actual configured scope caught a real drift (the undocumented admin exclusion on
+  `require-mfa-all-users`), and the record has been corrected to match reality.
+
+---
+
 ## Evidence
 
 All screenshots are in `screenshots/`. Tenant ID and primary domain are redacted
@@ -303,6 +357,8 @@ in all images and referred to only as `<tenant>` throughout this document.
 | `12-access-review-pending.png` | Access review results — Alice Not reviewed, system-recommended action: Deny |
 | `13-access-review-completed.png` | Access review results — Alice Approved, reviewed by Global Administrator |
 | `14-conditional-access-policies-list.png` | CA policies list — both policies shown, `risk-based-signin-mfa` in Report-only state |
+| `17-signin-report-only-results.png` | Sign-in activity detail, Report-only tab — both custom CA policies evaluated, result "Not applied" |
+| `18-require-mfa-policy-assignments.png` | `require-mfa-all-users` policy summary — assignments and session controls, confirming the "all users included and specific users excluded" scope |
 
 ---
 
@@ -315,7 +371,7 @@ in all images and referred to only as `<tenant>` throughout this document.
 | AC-6: Least Privilege | NIST SP 800-53 | Security Reader provides read-only access; P2 license assigned only to admin account |
 | AC-12: Session Termination | NIST SP 800-53 | CA policy configures an 8-hour sign-in frequency, bounding session lifetime once enforced |
 | IA-11: Re-authentication | NIST SP 800-53 | 8-hour sign-in frequency is the more precise fit — it forces re-authentication after a defined interval |
-| IA-2: Identification and Authentication | NIST SP 800-53 | Configured; validated in report-only; enforcement pending — CA policy would require MFA for all users across all cloud apps once switched to "On" |
+| IA-2: Identification and Authentication | NIST SP 800-53 | Met via Security Defaults (tenant-wide MFA already enforced today); `require-mfa-all-users` is a more granular replacement still validated in report-only, enforcement pending |
 | IA-2(1): MFA — Privileged Accounts | NIST SP 800-53 | Configured; validated in report-only; enforcement pending — "All users" scope includes privileged accounts |
 | IA-2(2): MFA — Non-Privileged Accounts | NIST SP 800-53 | Configured; validated in report-only; enforcement pending — "All users" scope includes standard accounts |
 | CA-2: Control Assessments | NIST SP 800-53 | Met — CA policy deployed in Report-only mode to assess impact before enforcement |
@@ -324,6 +380,9 @@ in all images and referred to only as `<tenant>` throughout this document.
 | AC-2(3): Disable Accounts | NIST SP 800-53 | Met — PIM-eligible assignment formally recertified via a one-time Access Review with recorded justification |
 | CA-7: Continuous Monitoring | NIST SP 800-53 | Met — Access Review functions as a point-in-time assessment of a privileged assignment's continued necessity |
 | AC-2(12): Account Monitoring for Atypical Usage | NIST SP 800-53 | Configured, not exercised — risk-based CA policy acts on sign-in risk signals, but no genuine risk event has occurred to validate it |
+| AU-2: Event Logging | NIST SP 800-53 | Met — Entra natively generates and retains sign-in and Conditional Access evaluation events |
+| AU-6: Audit Review, Analysis, and Reporting | NIST SP 800-53 | Met — sign-in log review directly surfaced an undocumented policy exclusion and corrected the record |
+| CM-6: Configuration Settings | NIST SP 800-53 | Met — documented policy scope was compared against actual configured scope, catching a real drift on `require-mfa-all-users` |
 
 ---
 
