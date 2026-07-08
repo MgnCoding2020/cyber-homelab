@@ -1,0 +1,30 @@
+**********************
+PowerShell transcript start
+Start time: 20260708160350
+Username: SandboxHost-639191167664989306\michael
+RunAs User: SandboxHost-639191167664989306\michael
+Configuration Name: 
+Machine: SandboxHost-639191167664989306 (Unix 6.1.146.1)
+Host Application: /opt/microsoft/powershell/7/pwsh.dll -NoLogo
+Process ID: 2249
+PSVersion: 7.6.2
+PSEdition: Core
+GitCommitId: 7.6.2
+OS: Microsoft Azure Linux 3.0
+Platform: Unix
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is ./03-provision-user-group.txt
+Installing Microsoft.Graph.Users and Microsoft.Graph.Groups modules (current user scope)...
+WARNING: The version '2.38.0' of module 'Microsoft.Graph.Authentication' is currently in use. Retry the operation after closing the applications.
+WARNING: The version '2.38.0' of module 'Microsoft.Graph.Groups' is currently in use. Retry the operation after closing the applications.
+To sign in, use a web browser to open the page https://login.microsoft.com/device and enter the code <redacted-device-code> to authenticate.
+Created user carol.auditor@<redacted-domain> (Id: c408fd5b-b9ca-498e-9657-d2bd1537d1bf). Temp password was generated but is not logged - relay it out-of-band.
+Added Carol Auditor to lab-readers.
+**********************
+PowerShell transcript end
+End time: 20260708160439
+**********************
