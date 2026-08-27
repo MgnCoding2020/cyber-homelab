@@ -20,7 +20,8 @@ _Last reviewed: 2026-07-07_
 | 03 | Networking (Wireshark / nmap) | `02-networking/` | ✅ Complete |
 | 04 | Active Directory | `03-active-directory/` | 🟡 In progress — Phases 1–4 done (network config, forest promotion, OU/group/user, GPO); Phase 5 (client join + `gpresult /r` verification) next |
 | 05 | STIG & Compliance | `04-stig-compliance/` | ⬜ Planned |
-| 06 | Capstone: Hybrid Identity | — | ⬜ Planned |
+| 06 | SharePoint Administration | `05-sharepoint-admin/` | 🟡 In progress — M365 E3 30-day trial added to the existing lab tenant (Developer Program sandbox didn't qualify); Day 1 done (license/role, sites, permission inheritance) |
+| 07 | Capstone: Hybrid Identity | — | ⬜ Planned |
 
 ### Health
 
@@ -33,10 +34,14 @@ _Last reviewed: 2026-07-07_
   turns technical work into a GRC signal. Keep it first-class in every lab,
   including the *configured vs. enforced* distinction (see Lab 04's AU-2, which
   is honestly marked enforcement-pending until Phase 5's client join).
-- **Entra ID P2 trial** started 2026-06-29, expires 2026-07-28 — cancel by
-  **2026-07-20** to avoid the $10.80/mo charge. Entitlement Management/Access
+- **Entra ID P2 trial** — cancelled/expired, resolved. Entitlement Management/Access
   Packages was deliberately scoped out as too deep for this lab's
   breadth-over-depth goal; don't re-propose it unless the user raises it.
+- **M365 E3 trial** activated 2026-08-27 for Lab 06 (SharePoint Administration),
+  on the existing lab tenant — user intends to keep it active **4 days
+  max (through ~2026-08-31)**. Front-load evidence capture; don't leave
+  screenshots for a final day scramble. Remove the license / cancel the trial
+  once Lab 06 evidence is captured.
 
 ### ✅ Verified good — no action
 
@@ -50,14 +55,16 @@ _Last reviewed: 2026-07-07_
 - **Lab 04 Phase 5 (VM required):** join a client VM to `corp.lab` under the
   `Computers` OU, then confirm `Audit-Policy-Baseline` actually applies via
   `gpresult /r`. **Take a Hyper-V checkpoint of the client VM before joining.**
-- **Host-only, no VM needed:** Lab 02's sign-in/audit log review (AU-2, AU-6) is
-  now done — it also caught and corrected an undocumented admin exclusion on
-  `require-mfa-all-users` and clarified that Security Defaults, not the
-  Report-only CA policies, is what's actually enforcing MFA today. Remaining
-  P2 headroom before the 2026-07-20 cancel date: exercising the two Report-only
-  CA policies against their real target scope (`alice.admin`/`bob.reader` have
-  never signed in interactively, so neither policy has a real Success/Failure
-  result yet — only "Not applied" against the excluded admin account).
+- Lab 02's sign-in/audit log review (AU-2, AU-6) is done — it also caught and
+  corrected an undocumented admin exclusion on `require-mfa-all-users` and
+  clarified that Security Defaults, not the Report-only CA policies, is what's
+  actually enforcing MFA today. Exercising the two Report-only CA policies
+  against their real target scope (`alice.admin`/`bob.reader` never signed in
+  interactively) is now moot — the P2 trial that powered Identity Protection's
+  risk engine has expired, so this item is closed as-is rather than pursued
+  further.
+- **Lab 06 (SharePoint Administration):** in progress on a 4-day M365 E3 trial —
+  see Health above for the timeline and evidence-capture discipline.
 
 ---
 
@@ -160,6 +167,10 @@ cyber-homelab/
 │    ├─ automation/
 │    ├─ evidence/
 │    └─ mapping/
+├─ 05-sharepoint-admin/      # Lab 06: SharePoint governance (host, browser)
+│    ├─ README.md
+│    ├─ screenshots/
+│    └─ notes/
 └─ docs/                     # Cross-cutting: glossary, POA&M
      ├─ glossary.md
      └─ poam.md
@@ -209,7 +220,8 @@ table at the top maps both.
 | 03 | Networking | VM | Wireshark capture of TCP handshake / DNS / HTTP; nmap against the VM |
 | 04 | Active Directory | VM | Windows Server eval, promote a DC, join a client, push a GPO |
 | 05 | STIG & Compliance | VM | Apply a STIG, validate, collect evidence, map to 800-171 / 800-53 |
-| 06 | Capstone | VM + cloud | Connect on-prem AD to Entra (hybrid identity); GRC summary |
+| 06 | SharePoint Administration | Host (browser) | Site permissions, external sharing policy, sensitivity labels, access review — E3 trial on the existing tenant |
+| 07 | Capstone | VM + cloud | Connect on-prem AD to Entra (hybrid identity); GRC summary |
 
 ---
 
